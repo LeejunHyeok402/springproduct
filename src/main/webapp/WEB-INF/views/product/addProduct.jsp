@@ -52,6 +52,18 @@
 			});
 		};
 		//이미지 미리보기 끝/////////////////
+		
+		//product 테이블의 product_Id 자동생성
+		//dataType : 응답타입
+		$.ajax({
+			url:"/getProductId",
+			type:"post",
+			success:function(data){
+				console.log("result: "+JSON.stringify(data));
+				console.log("result.ProductId: "+data.ProductId);
+				$("#productId").val(data.ProductId);
+			}
+		})
 	});
 </script>
 </head>
@@ -72,7 +84,7 @@
 			<div class="form-group row">
 				<label class="col-sm-2"><spring:message code="productId"/></label>
 				<div class="col-sm-3">
-					<input type="text" id="productId" name="productId" class="form-control">
+					<input type="text" id="productId" name="productId" class="form-control" readonly>
 				</div>
 			</div>
 			<div class="form-group row">

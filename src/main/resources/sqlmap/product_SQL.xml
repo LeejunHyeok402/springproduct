@@ -2,7 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="product">
 	<!-- PRODUCT 테이블에 insert -->
-	<insert id="insert" parameterType="kr.or.ddit.vo.ProductVO">
+	<insert id="insert" parameterType="productVO">
+		<!-- BEFORE : insert 문을 실행하기 전에 수행
+			AFTER: insert문을 실행한 후에 수행 -->
+		<selectKey order="BEFORE" keyProperty="productId" resultType="string">
+		SELECT SUBSTR(MAX(PRODUCT_ID),0,1) 
+		|| TRIM(SUBSTR(MAX(PRODUCT_ID),2,5)+1) PRODUCT_ID
+		FROM PRODUCT
+		</selectKey>
 		INSERT INTO PRODUCT(
 			  PRODUCT_ID
 			, PNAME
@@ -21,28 +28,36 @@
 			, #{category}
 			, #{unitsInStock}
 			, #{condition}
-			
 			)
 	</insert>
 	
 	<!-- 상품 목록 -->
 	<select id="list" resultType="productVO" parameterType="string">
-		SELECT PRODUCT_ID, PNAME, UNIT_PRICE, DESCRIPTION, MANUFACTURER
-			 , CATEGORY, UNITS_IN_STOCK, CONDITION,FILENAME
-		FROM   PRODUCT
+		SELECT P.PRODUCT_ID, P.PNAME, P.UNIT_PRICE, P.DESCRIPTION, P.MANUFACTURER
+			 , P.CATEGORY, P.UNITS_IN_STOCK, CONDITION, (SELECT A.ATTACH_NAME FROM ATTACH A
+        WHERE P.PRODUCT_ID = A.TID AND A.SEQ = 1) FILENAME
+		FROM   PRODUCT P
 		WHERE 	1=1
 		<if test="keyword!=null and keyword!=''">
-		AND 	(PNAME LIKE '%' || #{keyword} || '%'
-		OR 	  CATEGORY LIKE '%' || #{keyword} || '%')
+		AND 	(P.PNAME LIKE '%' || #{keyword} || '%'
+		OR 	  P.CATEGORY LIKE '%' || #{keyword} || '%')
 		</if>
-		ORDER BY PRODUCT_ID DESC
+		ORDER BY P.PRODUCT_ID DESC
 	</select>
 	
 	<select id="select_detail" resultType="productVO" parameterType="productVO">
-		SELECT PRODUCT_ID, PNAME, UNIT_PRICE, DESCRIPTION, MANUFACTURER
-			 , CATEGORY, UNITS_IN_STOCK, CONDITION,FILENAME
-		FROM   PRODUCT
-		WHERE PRODUCT_ID = #{productId}
+		SELECT P.PRODUCT_ID,
+        P.PNAME,
+        P.UNIT_PRICE, 
+        P.DESCRIPTION, 
+        P.MANUFACTURER,
+        P.CATEGORY,
+        P.UNITS_IN_STOCK,
+        P.CONDITION,
+        (SELECT A.ATTACH_NAME FROM ATTACH A
+        WHERE P.PRODUCT_ID = A.TID AND A.SEQ = 1) FILENAME
+		FROM  PRODUCT P 
+        WHERE PRODUCT_ID = #{productId}  
 	</select>
 	
 	<update id="update" parameterType="productVO">
@@ -82,6 +97,13 @@
              ,#{attachVO.attachSize},#{attachVO.attachType},sysdate)
        </foreach>
     </update>
+    
+    <!-- product 테이블의 기본키 자동 생성 -->
+    <select id="getProductId" resultType="string">
+    	SELECT SUBSTR(MAX(PRODUCT_ID),0,1) 
+		|| TRIM(SUBSTR(MAX(PRODUCT_ID),2,5)+1) PRODUCT_ID
+		FROM PRODUCT
+    </select>
 </mapper>
 
 

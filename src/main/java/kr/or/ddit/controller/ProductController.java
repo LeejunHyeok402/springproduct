@@ -5,7 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -17,9 +19,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.or.ddit.service.ProductService;
@@ -64,16 +68,29 @@ public class ProductController {
 		
 	}
 	
+	@ResponseBody
+	@PostMapping("/getProductId")
+	public Map<String,String> getProductId(){
+		Map<String,String> map = new HashMap<String, String>();
+		
+		String productId = this.productService.getProductId();
+		
+		map.put("ProductId",productId);
+		
+		return map;
+	}
+	
 	@RequestMapping(value = "/addProduct", method = RequestMethod.POST)
 	public ModelAndView addProductPost(ModelAndView mav, @ModelAttribute ProductVO productVO) {
 		log.info("ProductVO : " + productVO.toString());
 		log.info("여기는 옴");
 		//PRODUCT 테이블에 insert
 		//result > 0 => insert 성공, result == 0 => 실패
+		
+		
+		
 		int result = this.productService.insertProduct(productVO);
-		List<AttachVO> list = FileUploadUtil.fileUploadAction(productVO.getProductImage(),productVO.getProductId());
 		log.info("result : " + result);
-		int result2 = this.productService.insertAttach(list);
 		
 		if(result > 0) {//입력 성공
 			mav.setViewName("redirect:/product?productId=" + productVO.getProductId());

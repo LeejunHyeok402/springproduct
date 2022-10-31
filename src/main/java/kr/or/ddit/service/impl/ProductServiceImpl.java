@@ -3,6 +3,7 @@ package kr.or.ddit.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import kr.or.ddit.dao.ProductDao;
@@ -27,15 +28,13 @@ public class ProductServiceImpl implements ProductService{
 		//product 테이블에 insert
 		int result = this.productDao.insertProduct(productVO);
 		//attach 테이블에 다중 insert
-		
+		if(result > 0 ) {
+			List<AttachVO> list = FileUploadUtil.fileUploadAction(productVO.getProductImage(), productVO.getProductId());
+			this.productDao.insertAttach(list);
+		}
 		return result;
 	}
 	
-	@Override
-	public int insertAttach(List<AttachVO> attachVOList) {
-		log.info("service: "+productDao);
-		return this.productDao.insertAttach(attachVOList);
-	}
 	
 	//상품 목록
 	@Override
@@ -66,6 +65,11 @@ public class ProductServiceImpl implements ProductService{
 		//2. cart_det 테이블에 insert
 		
 		return 0;
+	}
+	
+	@Override
+	public String getProductId() {
+		return this.productDao.getProductId();
 	}
 }
 

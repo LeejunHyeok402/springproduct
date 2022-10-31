@@ -38,7 +38,7 @@
 		<div class="row">
 			<!-- 이미지 div -->
 			<div class="col-md-5">
-				<img src="/resources/images/${data.filename}" 
+				<img src="/resources/upload${data.filename}" 
 				alt="${data.pname}" title="${data.pname}" 
 				style="width:100%;"/>
 			</div>		

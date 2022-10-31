@@ -17,11 +17,13 @@ public interface ProductService {
 
 	public ProductVO selectDetail(ProductVO productVO);
 
-	int update(ProductVO productVO);
+	public int update(ProductVO productVO);
 
-	int delete(String productId);
+	public int delete(String productId);
 	
 	public int thankCustomer(CartVO cartVO);
 
-	int insertAttach(List<AttachVO> attachVOList);
+	public String getProductId();
+
+
 }

@@ -53,4 +53,8 @@ public class ProductDao {
 		log.info("dao: "+this.sqlSessionTemplate);
 		return this.sqlSessionTemplate.insert("product.insertAttach", attachVOList);
 	}
+	//  <select id="getProductId" resultType="string">
+	public String getProductId() {
+		return this.sqlSessionTemplate.selectOne("product.getProductId");
+	}
 }

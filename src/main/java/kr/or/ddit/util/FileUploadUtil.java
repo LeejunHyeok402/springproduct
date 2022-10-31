@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,8 +41,8 @@ public class FileUploadUtil {
 			uploadPath.mkdirs();
 		}
 		
+		//<input type="file" name="" multiple
 		int seq = 1;
-		
 		for (MultipartFile multipartFile : multipartFiles) {
 			log.info("------------");
 			log.info("파일명: "+multipartFile.getOriginalFilename());
@@ -65,7 +66,7 @@ public class FileUploadUtil {
 				attachVO.setSeq(seq++);
 				attachVO.setTid(tid);
 				
-				attachVO.setAttachName(getFolder().replace("\\", "/")+"/"+uploadFileName);
+				attachVO.setAttachName("/"+getFolder().replace("\\", "/")+"/"+uploadFileName);
 				attachVO.setAttachSize(Long.valueOf(multipartFile.getSize()).intValue());
 				attachVO.setAttachType(Files.probeContentType(saveFile.toPath()));
 				
@@ -90,8 +91,6 @@ public class FileUploadUtil {
 		
 		log.info(attachVOList.toString());
 		
-		
-		
 		log.info("파일 업로드를 완료했습니다.");
 		return attachVOList;
 	}
@@ -99,7 +98,7 @@ public class FileUploadUtil {
 	//연/월/일 폴더 생성
 	public static String getFolder() {
 		//format 지정
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		//날짜 객체 생성
 		Date date = new Date();
